@@ -73,6 +73,7 @@ export default function Home() {
   const [occupations, setOccupations] = useState<Record<string, number>>({});
   const [latamRank, setLatamRank] = useState<number>(0);
   const [globalRank, setGlobalRank] = useState<number>(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -234,7 +235,7 @@ export default function Home() {
 
             setLoading(false);
           },
-          error: (err) => {
+          error: (err: Error) => {
             setError(`Error al cargar datos: ${err.message}`);
             setLoading(false);
           },
@@ -385,7 +386,7 @@ export default function Home() {
         borderWidth: 1,
         padding: 12,
         displayColors: false,
-        titleFont: { size: 12, weight: '500' },
+        titleFont: { size: 12, weight: 'normal' as const },
         bodyFont: { size: 11 },
       },
     },
@@ -418,7 +419,7 @@ export default function Home() {
   const horizontalChartOptions = {
     indexAxis: 'y' as const,
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         display: false,
@@ -431,7 +432,7 @@ export default function Home() {
         borderWidth: 1,
         padding: 12,
         displayColors: false,
-        titleFont: { size: 11, weight: '500' },
+        titleFont: { size: 11, weight: 'normal' as const },
         bodyFont: { size: 11 },
         callbacks: {
           title: function(context: any) {
@@ -488,7 +489,7 @@ export default function Home() {
         labels: {
           color: '#A1A1A1',
           padding: 20,
-          font: { size: 11, weight: '400' },
+          font: { size: 11, weight: 'normal' as const },
           usePointStyle: true,
           pointStyle: 'circle',
         },
@@ -501,7 +502,7 @@ export default function Home() {
         borderWidth: 1,
         padding: 12,
         displayColors: false,
-        titleFont: { size: 12, weight: '500' },
+        titleFont: { size: 12, weight: 'normal' as const },
         bodyFont: { size: 11 },
       },
     },
@@ -516,13 +517,66 @@ export default function Home() {
             <span className="text-[#EAEAEA] font-medium text-sm tracking-tight">Claude Insights</span>
             <span className="w-1 h-1 rounded-full bg-[#00E0B4]"></span>
           </div>
-          <div className="flex items-center gap-6 text-xs">
+
+          {/* Desktop menu */}
+          <div className="hidden md:flex items-center gap-6 text-xs">
             <a href="#overview" className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200">Overview</a>
             <a href="#patterns" className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200">Patterns</a>
             <a href="#tasks" className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200">Tasks</a>
             <a href="#insights" className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200">Insights</a>
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {mobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-white/[0.06] bg-black/95 backdrop-blur-xl">
+            <div className="max-w-[1200px] mx-auto px-6 py-4 flex flex-col gap-4 text-sm">
+              <a
+                href="#overview"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200 py-2"
+              >
+                Overview
+              </a>
+              <a
+                href="#patterns"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200 py-2"
+              >
+                Patterns
+              </a>
+              <a
+                href="#tasks"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200 py-2"
+              >
+                Tasks
+              </a>
+              <a
+                href="#insights"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-[#A1A1A1] hover:text-[#EAEAEA] transition-colors duration-200 py-2"
+              >
+                Insights
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
       <div className="max-w-[1200px] mx-auto px-6 pt-32 pb-24">
@@ -534,10 +588,12 @@ export default function Home() {
           <p className="text-base text-[#A1A1A1] mb-8 max-w-2xl leading-relaxed">
             See the patterns behind adoption. Measured from 250k+ sessions, aggregated & anonymized.
           </p>
-          <div className="flex items-center gap-3 text-xs text-[#6B6B6B]">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3 text-xs text-[#6B6B6B]">
             <span>{stats?.dateStart} → {stats?.dateEnd}</span>
-            <span className="w-1 h-1 rounded-full bg-[#6B6B6B]"></span>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-[#6B6B6B]"></span>
             <span>Anthropic Economic Index</span>
+            <span className="hidden md:block w-1 h-1 rounded-full bg-[#6B6B6B]"></span>
+            <span>Crafted by Nicolás Quintero</span>
           </div>
         </header>
 
@@ -666,7 +722,9 @@ export default function Home() {
               <p className="text-xs text-[#6B6B6B]/60 mb-12 italic">Hover for full name & percentage share</p>
 
               <div className="bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300 p-8 rounded-xl">
-                <Bar data={requestChartData} options={horizontalChartOptions} />
+                <div className="h-[500px] md:h-[400px]">
+                  <Bar data={requestChartData} options={horizontalChartOptions} />
+                </div>
               </div>
             </section>
 
@@ -677,7 +735,9 @@ export default function Home() {
               <p className="text-xs text-[#6B6B6B]/60 mb-12 italic">Hover for full description & percentage share</p>
 
               <div className="bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.04] hover:border-white/[0.12] transition-all duration-300 p-8 rounded-xl">
-                <Bar data={onetChartData} options={horizontalChartOptions} />
+                <div className="h-[500px] md:h-[400px]">
+                  <Bar data={onetChartData} options={horizontalChartOptions} />
+                </div>
               </div>
             </section>
 
